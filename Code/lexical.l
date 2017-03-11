@@ -1,9 +1,17 @@
 %option yylineno
-%{
-#include <stdio.h>
+%{ 
+#include "syntax.tab.h"
+extern YYSTYPE yylval;
 %}
 type    int|float
 digit  [0-9]
+digits {digit}+
+optionalFraction	\.{digits}
+optionalExponent	[eE][+-]?{digits}
+float	{digits}{optionalFraction}{optionalExponent}?
+dec	[1-9][0-9]*
+oct	0[1-7][0-7]*
+hex	0[xX][1-9a-fA-F][0-9a-fA-F]* 
 letter  [a-zA-Z]
 ws  [\f\v\n\t ]
 %%
@@ -11,10 +19,10 @@ ws  [\f\v\n\t ]
 ";"   {printf("SEMI\n");}
 ","   {printf("COMMA\n");}
 "="   {printf("ASSIGNOP\n");}
-"+"   {printf("PLUS\n");}
-"-"   {printf("MINUS\n");}
-"*"   {printf("STAR\n");}
-"/"   {printf("DIV\n");}
+"+"   {printf("PLUS\n"); return PLUS;}
+"-"   {printf("MINUS\n"); return MINUS;}
+"*"   {printf("STAR\n"); return STAR;}
+"/"   {printf("DIV\n"); return DIV;}
 "&&"   {printf("AND\n");}
 "||"   {printf("OR\n");}
 "."   {printf("DOT\n");}
@@ -30,18 +38,9 @@ return   {printf("RETURN\n");}
 if   {printf("IF\n");}
 else   {printf("ELSE\n");}
 while   {printf("WHILE\n");}
-{digit}+    {printf("INT\n");}
-{type}  {printf("TYPE\n");}
+{type}	{printf("TYPE\n");}
+{float}	{printf("FLOAT\n");}
+{dec}|{oct}|{hex}|0    {printf("INT\n"); yylval = atoi(yytext); return INT;}
 [a-zA-Z_][a-zA-Z0-9_]*   {printf("ID\n");}
 . {printf("Error at Line %d: Mysterious characters %s\n",yylineno, yytext);}
 %%
-int main(int argc, char** argv) {
-    if (argc > 1) {
-        if (!(yyin = fopen(argv[1], "r"))) {
-            perror("argv[1]");
-            return 1;
-        }
-    }
-    yylex();
-    return 0;
-}
