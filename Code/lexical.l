@@ -22,7 +22,7 @@ digit  [0-9]
 digits {digit}+
 optionalFraction	\.{digits}
 optionalExponent	[eE][+-]?{digits}
-float	{digits}{optionalFraction}{optionalExponent}?
+float	{digits}{optionalFraction}
 dec	[1-9][0-9]*
 oct	0[1-7][0-7]*
 hex	0[xX][1-9a-fA-F][0-9a-fA-F]* 
@@ -38,7 +38,12 @@ ws  [\f\v\t ]
 		}
 "/*"	{
 			char c1, c2 = 0; 
-			while (c2 = input()) { 
+			while (c2 = input()) {
+				if (c2 == -1) {
+					printf("Error type A at Line %d: met EOF\n", yylineno);	
+					is_err = 1;
+					break;
+				}
 				if (c1 == '*' && c2 == '/')
 					 break; 
 				c1 = c2;
@@ -70,7 +75,7 @@ else   {yylval.type_ast_node = ast_create_node(yylineno, "ELSE", LEX_T, yytext);
 while   {yylval.type_ast_node = ast_create_node(yylineno, "WHILE", LEX_T, yytext); return WHILE;}
 {type}	{yylval.type_ast_node = ast_create_node(yylineno, "TYPE", TYPE_T, yytext); return TYPE;}
 {float}	{yylval.type_ast_node = ast_create_node(yylineno, "FLOAT", FLOAT_T, yytext); return FLOAT;}
-{dec}|{oct}|{hex}|0    {yylval.type_ast_node = ast_create_node(yylineno, "INT", INT_T, yytext); return INT;}
+{dec}|0    {yylval.type_ast_node = ast_create_node(yylineno, "INT", INT_T, yytext); return INT;}
 [a-zA-Z_][a-zA-Z0-9_]*   {yylval.type_ast_node = ast_create_node(yylineno, "ID", ID_T, yytext); return ID;}
 . {printf("Error type A at Line %d: Mysterious characters %s\n",yylineno, yytext); is_err = 1;}
 %%

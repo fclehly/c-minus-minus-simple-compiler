@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 //	yydebug = 1;
 	yyparse();
 	if (!is_err) {
-		ast_print_tree(ast_root, 0);
+		//ast_print_tree(ast_root, 0);
 	}
 	
 	return 0;

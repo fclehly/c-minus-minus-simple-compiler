@@ -16,7 +16,7 @@ LFC = $(shell find ./ -name "*.l" | sed s/[^/]*\\.l/lex.yy.c/)
 YFC = $(shell find ./ -name "*.y" | sed s/[^/]*\\.y/syntax.tab.c/)
 LFO = $(LFC:.c=.o)
 YFO = $(YFC:.c=.o)
-TESTFILES = $(shell find ../Test/ -name "*.cmm")
+TESTFILES = $(shell find ../Test/testcase_lab1/*.cmm)
 
 parser: syntax $(filter-out $(LFO),$(OBJS))
 	$(CC) -o parser $(filter-out $(LFO),$(OBJS)) -lfl -ly
@@ -36,6 +36,16 @@ syntax-c: $(YFILE)
 .PHONY: clean test
 test:
 	./parser ../Test/test1.cmm
+testall:
+	touch test.out
+	rm test.out
+	touch test.out
+	for t in $(TESTFILES);	\
+		do echo "$$t" >> test.out;	\
+			./parser "$$t" >> test.out;	\
+			echo "\n" >> test.out;	\
+		done
+
 clean:
 	rm -f parser lex.yy.c syntax.tab.c syntax.tab.h syntax.output
 	rm -f $(OBJS) $(OBJS:.o=.d)
