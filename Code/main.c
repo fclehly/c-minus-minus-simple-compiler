@@ -1,10 +1,14 @@
 #include <stdio.h>
-#include "ast.h"
+#include "st.h"
 #include "syntax.tab.h"
+#include "semantic.h"
 extern int yyparse();
 extern void yyrestart(FILE* input_file);
 extern FILE* yyin;
 extern int yylineno;
+
+
+
 //int is_error = 0;
 /*
 int yyerror(const char* msg) {
@@ -28,7 +32,9 @@ int main(int argc, char** argv) {
 //	yydebug = 1;
 	yyparse();
 	if (!is_err) {
-		//ast_print_tree(ast_root, 0);
+		st_print_tree(st_root, 0);
+		printf("\n\n");
+		semantic_analysis(st_root);
 	}
 	
 	return 0;

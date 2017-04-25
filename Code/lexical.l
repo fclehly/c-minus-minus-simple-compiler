@@ -4,7 +4,7 @@
 //#include <string.h>
 #include <stdio.h>
 #include "syntax.tab.h"
-#include "ast.h"
+#include "st.h"
 
 int yycolumn = 1;
 
@@ -14,7 +14,7 @@ int yycolumn = 1;
 		yylloc.last_column = yycolumn + yyleng - 1; \
 		yycolumn += yyleng; 
 extern YYSTYPE yylval;
-//extern AST_NODE* ast_create_node(int lineno, char* name, AST_NODE_TYPE type, char* value);
+//extern ST_NODE* st_create_node(int lineno, char* name, ST_NODE_TYPE type, char* value);
 	
 %}
 type    int|float
@@ -50,32 +50,32 @@ ws  [\f\v\t ]
 			}
 		}
 \n		{yycolumn = 1;}
-";"   {yylval.type_ast_node = ast_create_node(yylineno, "SEMI", LEX_T, yytext); return SEMI;}
-","   {yylval.type_ast_node = ast_create_node(yylineno, "COMMA", LEX_T, yytext); return COMMA;}
-"="   {yylval.type_ast_node = ast_create_node(yylineno, "ASSIGNOP", LEX_T, yytext); return ASSIGNOP;}
-"+"   {yylval.type_ast_node = ast_create_node(yylineno, "PLUS", LEX_T, yytext); return PLUS;}
-"-"   {yylval.type_ast_node = ast_create_node(yylineno, "MINUS", LEX_T, yytext); return MINUS;}
-"*"   {yylval.type_ast_node = ast_create_node(yylineno, "STAR", LEX_T, yytext); return STAR;}
-"/"   {yylval.type_ast_node = ast_create_node(yylineno, "DIV", LEX_T, yytext); return DIV;}
-"&&"  {yylval.type_ast_node = ast_create_node(yylineno, "AND", LEX_T, yytext); return AND;}
-"||"  {yylval.type_ast_node = ast_create_node(yylineno, "OR", LEX_T, yytext); return OR;}
-"."   {yylval.type_ast_node = ast_create_node(yylineno, "DOT", LEX_T, yytext); return DOT;}
-"!"   {yylval.type_ast_node = ast_create_node(yylineno, "NOT", LEX_T, yytext); return NOT;}
-"("   {yylval.type_ast_node = ast_create_node(yylineno, "LP", LEX_T, yytext); return LP;}
-")"   {yylval.type_ast_node = ast_create_node(yylineno, "RP", LEX_T, yytext); return RP;}
-"["   {yylval.type_ast_node = ast_create_node(yylineno, "LB", LEX_T, yytext); return LB;}
-"]"   {yylval.type_ast_node = ast_create_node(yylineno, "RB", LEX_T, yytext); return RB;}
-"{"   {yylval.type_ast_node = ast_create_node(yylineno, "LC", LEX_T, yytext); return LC;}
-"}"   {yylval.type_ast_node = ast_create_node(yylineno, "RC", LEX_T, yytext); return RC;}
-{relop}	{yylval.type_ast_node = ast_create_node(yylineno, "RELOP", RELOP_T, yytext); return RELOP;}
-struct   {yylval.type_ast_node = ast_create_node(yylineno, "STRUCT", LEX_T, yytext); return STRUCT;}
-return   {yylval.type_ast_node = ast_create_node(yylineno, "RETURN", LEX_T, yytext); return RETURN;}
-if   {yylval.type_ast_node = ast_create_node(yylineno, "IF", LEX_T, yytext); return IF;}
-else   {yylval.type_ast_node = ast_create_node(yylineno, "ELSE", LEX_T, yytext); return ELSE;}
-while   {yylval.type_ast_node = ast_create_node(yylineno, "WHILE", LEX_T, yytext); return WHILE;}
-{type}	{yylval.type_ast_node = ast_create_node(yylineno, "TYPE", TYPE_T, yytext); return TYPE;}
-{float}	{yylval.type_ast_node = ast_create_node(yylineno, "FLOAT", FLOAT_T, yytext); return FLOAT;}
-{dec}|0    {yylval.type_ast_node = ast_create_node(yylineno, "INT", INT_T, yytext); return INT;}
-[a-zA-Z_][a-zA-Z0-9_]*   {yylval.type_ast_node = ast_create_node(yylineno, "ID", ID_T, yytext); return ID;}
+";"   {yylval.type_st_node = st_create_node(yylineno, "SEMI", SEMI_T, yytext); return SEMI;}
+","   {yylval.type_st_node = st_create_node(yylineno, "COMMA", COMMA_T, yytext); return COMMA;}
+"="   {yylval.type_st_node = st_create_node(yylineno, "ASSIGNOP", ASSIGNOP_T, yytext); return ASSIGNOP;}
+"+"   {yylval.type_st_node = st_create_node(yylineno, "PLUS", PLUS_T, yytext); return PLUS;}
+"-"   {yylval.type_st_node = st_create_node(yylineno, "MINUS", MINUS_T, yytext); return MINUS;}
+"*"   {yylval.type_st_node = st_create_node(yylineno, "STAR", STAR_T, yytext); return STAR;}
+"/"   {yylval.type_st_node = st_create_node(yylineno, "DIV", DIV_T, yytext); return DIV;}
+"&&"  {yylval.type_st_node = st_create_node(yylineno, "AND", AND_T, yytext); return AND;}
+"||"  {yylval.type_st_node = st_create_node(yylineno, "OR", OR_T, yytext); return OR;}
+"."   {yylval.type_st_node = st_create_node(yylineno, "DOT", DOT_T, yytext); return DOT;}
+"!"   {yylval.type_st_node = st_create_node(yylineno, "NOT", NOT_T, yytext); return NOT;}
+"("   {yylval.type_st_node = st_create_node(yylineno, "LP", LP_T, yytext); return LP;}
+")"   {yylval.type_st_node = st_create_node(yylineno, "RP", RP_T, yytext); return RP;}
+"["   {yylval.type_st_node = st_create_node(yylineno, "LB", LB_T, yytext); return LB;}
+"]"   {yylval.type_st_node = st_create_node(yylineno, "RB", RB_T, yytext); return RB;}
+"{"   {yylval.type_st_node = st_create_node(yylineno, "LC", LC_T, yytext); return LC;}
+"}"   {yylval.type_st_node = st_create_node(yylineno, "RC", RC_T, yytext); return RC;}
+{relop}	{yylval.type_st_node = st_create_node(yylineno, "RELOP", RELOP_T, yytext); return RELOP;}
+struct   {yylval.type_st_node = st_create_node(yylineno, "STRUCT", STRUCT_T, yytext); return STRUCT;}
+return   {yylval.type_st_node = st_create_node(yylineno, "RETURN", RETURN_T, yytext); return RETURN;}
+if   {yylval.type_st_node = st_create_node(yylineno, "IF", IF_T, yytext); return IF;}
+else   {yylval.type_st_node = st_create_node(yylineno, "ELSE", ELSE_T, yytext); return ELSE;}
+while   {yylval.type_st_node = st_create_node(yylineno, "WHILE", WHILE_T, yytext); return WHILE;}
+{type}	{yylval.type_st_node = st_create_node(yylineno, "TYPE", TYPE_T, yytext); return TYPE;}
+{float}	{yylval.type_st_node = st_create_node(yylineno, "FLOAT", FLOAT_T, yytext); return FLOAT;}
+{dec}|0    {yylval.type_st_node = st_create_node(yylineno, "INT", INT_T, yytext); return INT;}
+[a-zA-Z_][a-zA-Z0-9_]*   {yylval.type_st_node = st_create_node(yylineno, "ID", ID_T, yytext); return ID;}
 . {printf("Error type A at Line %d: Mysterious characters %s\n",yylineno, yytext); is_err = 1;}
 %%
