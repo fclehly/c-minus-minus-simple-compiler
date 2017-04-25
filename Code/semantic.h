@@ -5,7 +5,19 @@
 #include "symbol_table.h"
 #include "st.h"
 
+
+enum semantic_error_type {
+    UndefinedVariable = 1, UndefinedFunction, RedefinedVariable, RedefinedFunction,
+    TypeMismatchedAssignment, LeftHandNotVariable, TypeMismatchedOperands,
+    TypeMismatchedReturn, FunctionNotApplicable, IdNotArray, IdNotFunction, 
+    ArrayKeyNotInteger, IllegalUseDot, NonExistentField, RedefinedField, 
+    DuplicatedStructureName, UndefinedStructure,
+};
+
+typedef enum semantic_error_type SemanticErrorType;
+
 void semantic_analysis(ST_NODE* root);
+void node_parse(ST_NODE* head);
 void traverse(ST_NODE* root);
 
 void sematic_error(int error_type, int lineno, char* msg);
@@ -27,5 +39,6 @@ void compst_parser(ST_NODE* head);
 void stmtlist_parser(ST_NODE* head);
 void stmt_parser(ST_NODE* head);
 void exp_parser(ST_NODE* head);
+void args_parser(ST_NODE* head);
 
 #endif
