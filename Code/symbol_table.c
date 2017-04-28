@@ -83,6 +83,7 @@ FieldList* create_fieldlist(char* name) {
     FieldList* field = (FieldList*) malloc(sizeof(FieldList));
     field->tail = NULL;
     field->type = NULL;
+    field->inStructure = 0;
     field->name = (char*) malloc(sizeof(name));
     strcpy(field->name, name);
     return field;

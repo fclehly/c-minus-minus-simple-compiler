@@ -31,8 +31,8 @@ char* opttag_parser(ST_NODE* head);
 FieldList* deflist_parser(ST_NODE* head, int isInStructure);
 FieldList* def_parser(ST_NODE* head, int isInStructure);
 FieldList* declist_parser(ST_NODE* head, Type* type, int isInStructure);
-FieldList* dec_parser(ST_NODE* head, Type* type);
-FieldList* vardec_parser(ST_NODE* head, Type* type); //c
+FieldList* dec_parser(ST_NODE* head, Type* type, int isInStructure);
+FieldList* vardec_parser(ST_NODE* head, Type* type, int isInStructure); //c
 void extdeclist_parser(ST_NODE* head, Type* type);
 FieldList* fundec_parser(ST_NODE* head, Type* retType);
 FieldList* varlist_parser(ST_NODE* head);

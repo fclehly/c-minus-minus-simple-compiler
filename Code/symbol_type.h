@@ -40,6 +40,7 @@ struct Type_ {
 
 struct FieldList_ {
 	char* name;
+	int inStructure;
 	Type* type;
 	FieldList* tail;
 };

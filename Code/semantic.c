@@ -61,13 +61,34 @@ int type_equals(Type* type1, Type* type2) {
 			}
 			else if (type1->kind == ARRAY) {
 				return 1;
-			
 			}
 			else if (type1->kind == STRUCTURE) {
-				if (strcmp(type1->u.structure->name, type2->u.structure->name)) {
-					return 0;
+				if (!strcmp(type1->u.structure->name, type2->u.structure->name)) {
+					return 1;
 				}
-				return 1;
+				else {
+					FieldList* p1 = type1->u.structure;
+					FieldList* p2 = type2->u.structure;
+					int flag = 1;
+					while (p1 && p2) {
+						if (!type_equals(p1->type, p2->type)) {
+							flag = 0;
+							break;
+						}
+						p1 = p1->tail;
+						p2 = p2->tail;
+					}
+					if ((p1 == NULL && p2 != NULL) || (p1 != NULL && p2 == NULL)) {
+						flag = 0;
+					}
+					if (flag == 0) {
+						return 0;
+					}
+					else {
+						return 1;
+					}
+				}
+				return 0;
 			} 
 			else {
 				return 0;
@@ -202,19 +223,8 @@ FieldList* deflist_parser(ST_NODE* head, int isInStructure) {
 				child = child->neighbor;
 				if (child != NULL) {
 					FieldList* field2 = deflist_parser(child, isInStructure);
-					field1->tail = field2;
-					FieldList* p = field2;
-					int flag = 0;
-					while (p) {
-						if (!strcmp(p->name, field1->name)) {
-							flag = 1;
-							break;
-						}
-						p = p->tail;
-					}
-					if (flag == 1) {
-						semantic_error(RedefinedField, child->lineno, "Redefined field", field1->name);
-						return NULL;
+					if (field2 != NULL) {
+						field1->tail = field2;
 					}
 				}
 				// logd("hello", LOG_I);
@@ -254,7 +264,7 @@ FieldList* def_parser(ST_NODE* head, int isInStructure) {
 FieldList* declist_parser(ST_NODE* head, Type* type, int isInStructure) {
 	logd("parsing...declist", LOG_I);
 	ST_NODE* child = head->first_child;
-	FieldList* field1 = dec_parser(child, type);
+	FieldList* field1 = dec_parser(child, type, isInStructure);
 	child = child->neighbor;
 	if (type == NULL) {
 		logd("declist type null", LOG_D);
@@ -275,10 +285,10 @@ FieldList* declist_parser(ST_NODE* head, Type* type, int isInStructure) {
 	return NULL;
 }
 
-FieldList* dec_parser(ST_NODE* head, Type* type) {
+FieldList* dec_parser(ST_NODE* head, Type* type, int isInStructure) {
 	logd("parsing...dec", LOG_I);
 	ST_NODE* child = head->first_child;
-	FieldList* field = vardec_parser(child, type);
+	FieldList* field = vardec_parser(child, type, isInStructure);
 	child = child->neighbor;
 	if (child != NULL) {
 		child = child->neighbor;
@@ -296,7 +306,7 @@ FieldList* dec_parser(ST_NODE* head, Type* type) {
 	return NULL;
 }
 
-FieldList* vardec_parser(ST_NODE* head, Type* type) {
+FieldList* vardec_parser(ST_NODE* head, Type* type, int isInStructure) {
 	logd("parsing...vardec", LOG_I);
 	ST_NODE* child = head->first_child;
 	if (type == NULL) {
@@ -306,18 +316,24 @@ FieldList* vardec_parser(ST_NODE* head, Type* type) {
 	if (child->type == ID_T) {
 		FieldList* field = table_get(child->string_value);
 		if (field != NULL) {
-			semantic_error(RedefinedVariable, child->lineno, "Redefined Variable", child->string_value);
+			if (field->inStructure == 1) {
+				semantic_error(RedefinedField, child->lineno, "Redefined field", child->string_value);
+			}
+			else {
+				semantic_error(RedefinedVariable, child->lineno, "Redefined Variable", child->string_value);
+			}
 			return NULL;
 		}
 		else {
 			FieldList* field = create_fieldlist(child->string_value);
 			field->type = type;
+			field->inStructure = isInStructure;
 			table_put(field);
 			return field;
 		}
 	}
 	else if (child->type == VarDec_T) {
-		FieldList* field = vardec_parser(child, type);
+		FieldList* field = vardec_parser(child, type, isInStructure);
 		Type* p = field->type;
 		Type* t = create_type(ARRAY);
 		t->u.array.size = child->neighbor->neighbor->int_value;
@@ -330,7 +346,7 @@ FieldList* vardec_parser(ST_NODE* head, Type* type) {
 
 void extdeclist_parser(ST_NODE* head, Type* type) {
 	ST_NODE* child = head->first_child;
-	vardec_parser(child, type);
+	vardec_parser(child, type, 0);
 	child = child->neighbor;
 	if (child != NULL) {
 		child = child->neighbor;
@@ -405,7 +421,7 @@ FieldList* paramdec_parser(ST_NODE* head) {
 	Type* type = specifier_parser(child);
 	if (type != NULL) {	
 		child = child->neighbor;
-		FieldList* field = vardec_parser(child, type);
+		FieldList* field = vardec_parser(child, type, 0);
 		return field;
 	}
 	return NULL;
@@ -557,6 +573,9 @@ Type* exp_parser(ST_NODE* head) {
 					semantic_error(ArrayKeyNotInteger, child->lineno, "Index of array is not interger", "");
 					return NULL;
 				}
+				if (type1->u.array.elem != NULL) {
+					return type1->u.array.elem;
+				}
 				return type1;
 			}
 			else {
@@ -625,6 +644,9 @@ Type* exp_parser(ST_NODE* head) {
 						}
 					}
 				}
+			}
+			if (field->type->kind == FUNCTION) {
+				return field->type->u.func.ret;
 			}
 			return field->type;
 			
