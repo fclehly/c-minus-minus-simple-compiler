@@ -177,7 +177,7 @@ Stmt:		Exp SEMI {
 	|		error SEMI	{}
 	;
 DefList:	Def DefList {
-				$$ = st_create_node(@$.first_line, "DefList", Stmt_T, NULL);
+				$$ = st_create_node(@$.first_line, "DefList", DefList_T, NULL);
 				st_append_children($$, 2, $1, $2);
 			}
 	|		/* Empty */ { $$ = NULL; }

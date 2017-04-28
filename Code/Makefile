@@ -19,7 +19,7 @@ YFO = $(YFC:.c=.o)
 TESTFILES = $(shell find ../Test/testcase_lab2/sample/*.cmm)
 
 parser: syntax $(filter-out $(LFO),$(OBJS))
-	$(CC) -o parser $(filter-out $(LFO),$(OBJS)) -lfl -ly
+	$(CC) -o parser $(filter-out $(LFO),$(OBJS)) -lfl -ly -g
 
 syntax: lexical syntax-c
 	$(CC) -c $(YFC) -o $(YFO)
@@ -35,7 +35,7 @@ syntax-c: $(YFILE)
 # 定义的一些伪目标
 .PHONY: clean test
 test:
-	./parser ../Test/testcase_lab2/sample/test1.cmm
+	./parser test.cmm
 testall:
 	touch test.out
 	rm test.out

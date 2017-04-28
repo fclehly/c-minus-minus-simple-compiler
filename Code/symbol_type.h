@@ -5,6 +5,11 @@
 #define BASIC_FLOAT 1
 
 
+#define LOG_I 90
+#define LOG_D 91
+#define LOG_W 2
+#define LOG_E 3
+
 typedef struct Type_ Type;
 typedef struct FieldList_ FieldList;
 typedef struct Item_ Item;
@@ -25,7 +30,11 @@ struct Type_ {
 			int size;
 		} array;
 		FieldList* structure;
-		Type* ret;
+		struct {
+			int num;
+			FieldList* params;
+			Type* ret;
+		} func;
 	} u;
 };
 
@@ -39,6 +48,8 @@ struct Item_ {
 	FieldList* value;
 	Item* next;
 };
+
+	
 
 
 #endif

@@ -20,5 +20,11 @@ FieldList* table_get(char* name);
 
 void table_print(int key);
 
+Type* create_type(ID_KIND kind);
+
+FieldList* create_fieldlist(char* name);
+
+Item* create_item();
+
 
 #endif

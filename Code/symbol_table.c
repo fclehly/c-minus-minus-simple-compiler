@@ -18,12 +18,11 @@ unsigned int hash_pjw(char* name) {
 	return val;
 }
 
-void table_put(FieldList* item) {
-    if (item != NULL) {
-        int key = hash_pjw(item->name);
-        Item* pItem = (Item*) malloc(sizeof(Item));
-        pItem->value = item;
-        pItem->next = NULL;
+void table_put(FieldList* field) {
+    if (field != NULL) {
+        int key = hash_pjw(field->name);
+        Item* pItem = create_item();
+        pItem->value = field;
         if (hashtable[key] == NULL) {
 			//printf("null %d\n", key);
             hashtable[key] = pItem;
@@ -71,4 +70,27 @@ void table_print(int key) {
     else {
         printf("null\n");
     }
+}
+
+
+Type* create_type(ID_KIND kind) {
+    Type* type = (Type*) malloc(sizeof(Type));
+    type->kind = kind;
+    return type;
+}
+
+FieldList* create_fieldlist(char* name) {
+    FieldList* field = (FieldList*) malloc(sizeof(FieldList));
+    field->tail = NULL;
+    field->type = NULL;
+    field->name = (char*) malloc(sizeof(name));
+    strcpy(field->name, name);
+    return field;
+}
+
+Item* create_item() {
+    Item* item = (Item*) malloc(sizeof(Item));
+    item->value = NULL;
+    item->next = NULL;
+    return item;
 }

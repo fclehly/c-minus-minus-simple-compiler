@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
 //	yydebug = 1;
 	yyparse();
 	if (!is_err) {
-		st_print_tree(st_root, 0);
-		printf("\n\n");
+		//st_print_tree(st_root, 0);
+		//printf("\n\n");
 		semantic_analysis(st_root);
 	}
 	

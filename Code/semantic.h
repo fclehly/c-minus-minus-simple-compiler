@@ -17,28 +17,32 @@ enum semantic_error_type {
 typedef enum semantic_error_type SemanticErrorType;
 
 void semantic_analysis(ST_NODE* root);
-void node_parse(ST_NODE* head);
+int node_parse(ST_NODE* head);
 void traverse(ST_NODE* root);
 
 void sematic_error(int error_type, int lineno, char* msg);
+int type_equals(Type* type1, Type* type2);
+Type* array_type(Type* type);
 
 void extdef_parser(ST_NODE* head);
-void specifier_parser(ST_NODE* head);
-void structspecifier_parser(ST_NODE* head);
-void opttag_parser(ST_NODE* head);
-void deflist_parser(ST_NODE* head);
-void def_parser(ST_NODE* head);
-void declist_parser(ST_NODE* head);
-void dec_parser(ST_NODE* head);
-void vardec_parser(ST_NODE* head);
-void extdeclist_parser(ST_NODE* head);
-void fundec_parser(ST_NODE* head);
-void varlist_parser(ST_NODE* head);
-void paramdec_parser(ST_NODE* head);
-void compst_parser(ST_NODE* head);
-void stmtlist_parser(ST_NODE* head);
-void stmt_parser(ST_NODE* head);
-void exp_parser(ST_NODE* head);
-void args_parser(ST_NODE* head);
+Type* specifier_parser(ST_NODE* head);
+Type* structspecifier_parser(ST_NODE* head);
+char* opttag_parser(ST_NODE* head);
+FieldList* deflist_parser(ST_NODE* head, int isInStructure);
+FieldList* def_parser(ST_NODE* head, int isInStructure);
+FieldList* declist_parser(ST_NODE* head, Type* type, int isInStructure);
+FieldList* dec_parser(ST_NODE* head, Type* type);
+FieldList* vardec_parser(ST_NODE* head, Type* type); //c
+void extdeclist_parser(ST_NODE* head, Type* type);
+FieldList* fundec_parser(ST_NODE* head, Type* retType);
+FieldList* varlist_parser(ST_NODE* head);
+FieldList* paramdec_parser(ST_NODE* head);
+void compst_parser(ST_NODE* head, Type* retType);
+void stmtlist_parser(ST_NODE* head, Type* retType);
+void stmt_parser(ST_NODE* head, Type* retTyep);
+Type* exp_parser(ST_NODE* head);
+FieldList* args_parser(ST_NODE* head);
+
+void logd(char* msg, int level);
 
 #endif
