@@ -2,6 +2,10 @@
 #include "st.h"
 #include "syntax.tab.h"
 #include "semantic.h"
+#include "irc.h"
+
+// #define PRINT_TREE
+
 extern int yyparse();
 extern void yyrestart(FILE* input_file);
 extern FILE* yyin;
@@ -23,18 +27,35 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	
-	FILE* f = fopen(argv[1], "r");
-	if (!f) {
+	FILE* f1 = fopen(argv[1], "r");
+	if (!f1) {
 		perror(argv[1]);
 		return 1;
 	}
-	yyrestart(f);
+	FILE* f2 = stdout;
+	if (argc >= 3) {
+		f2 = fopen(argv[2], "w");
+	}
+	yyrestart(f1);
 //	yydebug = 1;
 	yyparse();
 	if (!is_err) {
-		//st_print_tree(st_root, 0);
-		//printf("\n\n");
+#ifdef PRINT_TREE
+//lab1
+		st_print_tree(st_root, 0);
+		printf("\n\n");
+#endif
+//lab2
 		semantic_analysis(st_root);
+
+//lab3
+		ir_generate(st_root);
+		ir_output(f2);
+		if (argc >= 3) {
+			fclose(f2);
+		}
+		
+
 	}
 	
 	return 0;

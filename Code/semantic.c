@@ -6,6 +6,8 @@
 
 void semantic_analysis(ST_NODE* root) {
 	table_init();
+	add_read();
+	add_write();
 	traverse(root);
 }
 
@@ -98,31 +100,10 @@ int type_equals(Type* type1, Type* type2) {
 	return 0;
 }
 
-void logd(char* msg, int level) {
-	switch (level) {
-		case 3:
-			printf("Error: %s\n", msg);
-			break;
-		case 2:
-			printf("Waring: %s\n", msg);
-			break;
-		case 1:
-			printf("Debug: %s\n", msg);
-			break;
-		case 0:
-			printf("Info: %s\n", msg);
-			break;
-		default:
-			// printf("no level\n");
-			break;
-	}
-	
-}
 
 
 
 void extdef_parser(ST_NODE* head) {
-	logd("parsing...extdef", LOG_I);
 	ST_NODE* child = head->first_child;
 	Type* type = specifier_parser(child);
 	if (type != NULL) {
@@ -137,12 +118,10 @@ void extdef_parser(ST_NODE* head) {
 				compst_parser(child, type);
 			}
 		}
-		//logd("complete...extdef", LOG_D);
 	}
 }
 
 Type* specifier_parser(ST_NODE* head) {
-	logd("parsing...specifier", LOG_I);
 	ST_NODE* child = head->first_child;
 	if (child->type == TYPE_T) {
 		Type* type = create_type(BASIC);
@@ -162,7 +141,6 @@ Type* specifier_parser(ST_NODE* head) {
 }
 
 Type* structspecifier_parser(ST_NODE* head) {
-	logd("parsing...structspecifier", LOG_I);
 	ST_NODE* child = head->first_child;
 	child = child->neighbor;
 	if (child->type == OptTag_T) {
@@ -213,10 +191,8 @@ char* opttag_parser(ST_NODE* head) {
 }
 
 FieldList* deflist_parser(ST_NODE* head, int isInStructure) {
-	logd("parsing...deflist", LOG_I);
 	if (head != NULL) {
 		ST_NODE* child = head->first_child;
-		// logd("hello", LOG_I);
 		if (child != NULL) {
 			if (isInStructure) {
 				FieldList* field1 = def_parser(child, isInStructure);
@@ -227,23 +203,21 @@ FieldList* deflist_parser(ST_NODE* head, int isInStructure) {
 						field1->tail = field2;
 					}
 				}
-				// logd("hello", LOG_I);
 				return field1;
 				
 			}
 			else {
 				def_parser(child, isInStructure);
-				//logd("hhh", LOG_I);
+	
 				child = child->neighbor;
 				if (child != NULL) {
 					deflist_parser(child, isInStructure);
 				}
-				//logd("aaa", LOG_I);
+
 			}
 		}
 
 	}
-	logd("complete...deflist", LOG_I);
 	return NULL;
 }
 
@@ -256,18 +230,15 @@ FieldList* def_parser(ST_NODE* head, int isInStructure) {
 		if (isInStructure) {
 			return field;
 		}
-		// logd("complete...def", LOG_D);
 	}
 	return NULL;
 }
 
 FieldList* declist_parser(ST_NODE* head, Type* type, int isInStructure) {
-	logd("parsing...declist", LOG_I);
 	ST_NODE* child = head->first_child;
 	FieldList* field1 = dec_parser(child, type, isInStructure);
 	child = child->neighbor;
 	if (type == NULL) {
-		logd("declist type null", LOG_D);
 		return NULL;
 	}
 	if (child != NULL) {
@@ -286,7 +257,6 @@ FieldList* declist_parser(ST_NODE* head, Type* type, int isInStructure) {
 }
 
 FieldList* dec_parser(ST_NODE* head, Type* type, int isInStructure) {
-	logd("parsing...dec", LOG_I);
 	ST_NODE* child = head->first_child;
 	FieldList* field = vardec_parser(child, type, isInStructure);
 	child = child->neighbor;
@@ -307,10 +277,8 @@ FieldList* dec_parser(ST_NODE* head, Type* type, int isInStructure) {
 }
 
 FieldList* vardec_parser(ST_NODE* head, Type* type, int isInStructure) {
-	logd("parsing...vardec", LOG_I);
 	ST_NODE* child = head->first_child;
 	if (type == NULL) {
-		logd("vardec type null", LOG_D);
 		return NULL;
 	}
 	if (child->type == ID_T) {
@@ -355,7 +323,6 @@ void extdeclist_parser(ST_NODE* head, Type* type) {
 }
 
 FieldList* fundec_parser(ST_NODE* head, Type* retType) {
-	logd("parsing...fundec", LOG_I);
 	ST_NODE* child = head->first_child;
 	if (child->type == ID_T) {
 		FieldList* field1 = table_get(child->string_value);
@@ -365,7 +332,6 @@ FieldList* fundec_parser(ST_NODE* head, Type* retType) {
 		}
 		else {
 			if (child->neighbor->neighbor->type == RP_T) {
-				logd("generating...no params function", LOG_I);
 				FieldList* field = create_fieldlist(child->string_value);
 				Type* type1 = create_type(FUNCTION);
 				type1->u.func.ret = retType;
@@ -373,7 +339,6 @@ FieldList* fundec_parser(ST_NODE* head, Type* retType) {
 				type1->u.func.params = NULL;
 				field->type = type1;
 				table_put(field);
-				logd("generated!", LOG_I);
 				return field;
 			}
 			else if (child->neighbor->neighbor->type == VarList_T) {
@@ -387,7 +352,6 @@ FieldList* fundec_parser(ST_NODE* head, Type* retType) {
 					type1->u.func.params = fieldlist;
 					field->type = type1;
 					table_put(field);
-					//printf("func: %s\n", table_get(head->first_child->string_value)->type->u.func.params->tail->name);
 					return field;
 				}
 			}
@@ -399,7 +363,6 @@ FieldList* fundec_parser(ST_NODE* head, Type* retType) {
 FieldList* varlist_parser(ST_NODE* head) {
 	ST_NODE* child = head->first_child;
 	FieldList* field1 = paramdec_parser(child);
-// /	printf("%s\n", field1->name);
 	child = child->neighbor;
 	if (child != NULL) {
 		child = child->neighbor;
@@ -428,22 +391,21 @@ FieldList* paramdec_parser(ST_NODE* head) {
 }
 
 void compst_parser(ST_NODE* head, Type* retType) {
-	logd("parsing...compst", LOG_I);
+
 	ST_NODE* child = head->first_child;
 	child = child->neighbor;
-	//logd("starting...parsing...compst...deflist", LOG_I);
-	logd(child->name, LOG_D);
+
 	if (child != NULL && child->type == DefList_T) {
 		deflist_parser(child, 0);
 		child = child->neighbor;
 	}
-	// logd("start...parsing compst stmtlist", LOG_I);
+
 	stmtlist_parser(child, retType);
-	//logd("complete...compst", LOG_I);
+
 }
 
 void stmtlist_parser(ST_NODE* head, Type* retType) {
-	logd("parsing...stmtlist", LOG_I);
+
 	if (head != NULL) {
 		ST_NODE* child = head->first_child;
 		if (child != NULL) {
@@ -457,7 +419,6 @@ void stmtlist_parser(ST_NODE* head, Type* retType) {
 }
 
 void stmt_parser(ST_NODE* head, Type* retType) {
-	logd("parsing...stmt", LOG_I);
 	ST_NODE* child = head->first_child;
 	if (child->type == Exp_T) {
 		exp_parser(child);
@@ -494,7 +455,6 @@ void stmt_parser(ST_NODE* head, Type* retType) {
 }
 
 Type* exp_parser(ST_NODE* head) {
-	logd("parsing...exp", LOG_I);
 	ST_NODE* child = head->first_child;
 	if (child->type == Exp_T) {
 
@@ -663,7 +623,7 @@ Type* exp_parser(ST_NODE* head) {
 	} else if (child->type == INT_T) {
 		Type* t = create_type(BASIC);
 		t->u.basic = BASIC_INT;
-		logd("int", LOG_I);
+
 		return t;
 	}
 	return NULL;
@@ -687,4 +647,36 @@ FieldList* args_parser(ST_NODE* head) {
 		return field1;
 	}
 	return NULL;
+}
+
+
+
+
+
+void add_read() {
+	FieldList* read_func = create_fieldlist("read");
+	Type* type = create_type(FUNCTION);
+	type->u.func.num = 0;
+	type->u.func.params = NULL;
+	Type* retType = create_type(BASIC);
+	retType->u.basic = BASIC_INT;
+	type->u.func.ret = retType;
+	read_func->type = type;
+	table_put(read_func);
+
+}
+void add_write() {
+	FieldList* read_func = create_fieldlist("write");
+	Type* type = create_type(FUNCTION);
+	type->u.func.num = 1;
+	FieldList* params = create_fieldlist("i");
+	Type* paramType = create_type(BASIC);
+	paramType->u.basic = BASIC_INT;
+	params->type = paramType;
+	type->u.func.params = params;
+	Type* retType = create_type(BASIC);
+	retType->u.basic = BASIC_INT;
+	type->u.func.ret = retType;
+	read_func->type = type;
+	table_put(read_func);
 }

@@ -4,11 +4,8 @@
 #define BASIC_INT 0
 #define BASIC_FLOAT 1
 
+#include "irc.h"
 
-#define LOG_I 90
-#define LOG_D 91
-#define LOG_W 2
-#define LOG_E 3
 
 typedef struct Type_ Type;
 typedef struct FieldList_ FieldList;
@@ -42,6 +39,9 @@ struct FieldList_ {
 	char* name;
 	int inStructure;
 	Type* type;
+
+	Operand* op;
+
 	FieldList* tail;
 };
 

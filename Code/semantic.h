@@ -43,6 +43,9 @@ void stmt_parser(ST_NODE* head, Type* retTyep);
 Type* exp_parser(ST_NODE* head);
 FieldList* args_parser(ST_NODE* head);
 
-void logd(char* msg, int level);
+
+void add_read();
+void add_write();
+
 
 #endif
